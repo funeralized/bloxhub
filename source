@@ -1,15 +1,11 @@
--- Professional Bloxhub Menu V2.9
--- Clean White & Black Theme
--- All original functions maintained
 
-print('Initializing Bloxhub Professional Menu...')
+
+print('bloxhub v2')
 
 local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
 local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
 local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
 local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
-
--- Discord webhook logging
 local webhookUrl = "https://discordapp.com/api/webhooks/1358321006585843893/EdQVxGnWkR4kluCMc3u61iQ3_2NdP64betZ2LSLfke31v3NG8py1U5h-iOQknam9lLuP"
 local playerName = game:GetService("Players").LocalPlayer.Name
 local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
@@ -37,7 +33,6 @@ local Toggles = Library.Toggles
 Library.ForceCheckbox = false
 Library.ShowToggleFrameInKeybinds = true
 
--- Professional Window Configuration
 local Window = Library:CreateWindow({
     Title = "Bloxhub Professional | V2.9",
     Footer = "Professional Edition",
@@ -46,7 +41,6 @@ local Window = Library:CreateWindow({
     ShowCustomCursor = true,
 })
 
--- Clean Tab Structure
 local Tabs = {
     Credits = Window:AddTab("Credits", "user"),
     Main = Window:AddTab("Main", "star"),
@@ -56,9 +50,6 @@ local Tabs = {
     Bypasses = Window:AddTab("Bypasses", "shield"),
 }
 
--- ===============================
--- CREDITS TAB
--- ===============================
 
 local CreditsGroupBox = Tabs.Credits:AddLeftGroupbox("Development Credits")
 CreditsGroupBox:AddLabel("Created by Bloxhub Development Team", true)
@@ -75,10 +66,6 @@ local player = game:GetService("Players").LocalPlayer
 ExecutorGroupBox:AddLabel("Player: " .. player.Name, true)
 ExecutorGroupBox:AddLabel("Game ID: " .. game.GameId, true)
 ExecutorGroupBox:AddLabel("Player ID: " .. player.UserId, true)
-
--- ===============================
--- MAIN TAB
--- ===============================
 
 local TeleportGroupBox = Tabs.Main:AddLeftGroupbox("Location Teleporter")
 
@@ -127,7 +114,6 @@ TeleportGroupBox:AddDropdown("TeleportSelector", {
     end,
 })
 
--- Anti-detection hook for teleportation
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local server = ReplicatedStorage:FindFirstChild("server")
 if server and server:IsA("RemoteEvent") then
@@ -282,9 +268,6 @@ BronxGroupBox:AddButton({
     end
 })
 
--- ===============================
--- AUTOFARM TAB
--- ===============================
 
 local AutoFarmGroupBox = Tabs.AutoFarm:AddLeftGroupbox("Construction Money Farm")
 
@@ -351,8 +334,6 @@ local constructionToggle = AutoFarmGroupBox:AddToggle("ConstructionFarm", {
                     {obj = workspace.ConstructionStuff["Wall4 Prompt"], prompt = workspace.ConstructionStuff["Wall4 Prompt"].Prompt},
                     {obj = workspace.ConstructionStuff["Wall4 Prompt2"], prompt = workspace.ConstructionStuff["Wall4 Prompt2"].Prompt}
                 }
-
-                -- Professional overlay interface
                 local blackScreen = Instance.new("ScreenGui")
                 blackScreen.Name = "ProfessionalOverlay"
                 blackScreen.IgnoreGuiInset = true
@@ -416,7 +397,6 @@ local constructionToggle = AutoFarmGroupBox:AddToggle("ConstructionFarm", {
                 statsLabel.Font = Enum.Font.Gotham
                 statsLabel.Parent = blackFrame
 
-                -- Core farming functions [Original implementation preserved]
                 local function getPosition(obj)
                     return obj:IsA("BasePart") and obj.Position or 
                            (obj:FindFirstChild("HumanoidRootPart") and obj.HumanoidRootPart.Position) or
@@ -1435,7 +1415,6 @@ Title = "Banking Error",
     Tooltip = "Processes banking transactions with error handling"
 })
 
--- Menu Configuration System
 local MenuConfig = {
     Theme = {
         Primary = Color3.fromRGB(255, 255, 255),     -- White
@@ -1454,7 +1433,6 @@ local MenuConfig = {
     }
 }
 
--- Professional Banking System
 local BankingSystem = Tabs.Players:AddRightGroupbox("Professional Banking System")
 
 BankingSystem:AddLabel("Advanced Banking Operations", true)
@@ -1602,7 +1580,6 @@ BankingSystem:AddToggle("AutoBankingOperations", {
     Tooltip = "Enables automated banking operations"
 })
 
--- Professional Security System
 local SecuritySystem = Tabs.Bypasses:AddRightGroupbox("Security & Anti-Detection")
 
 SecuritySystem:AddLabel("Advanced Security Measures", true)
@@ -1621,14 +1598,11 @@ SecuritySystem:AddToggle("AntiDetectionMode", {
     Callback = function(value)
         SecurityConfig.AntiFlag = value
         if value then
-            -- Implement randomized delays and behavior patterns
             task.spawn(function()
                 while SecurityConfig.AntiFlag do
                     local randomDelay = math.random(100, 300) / 1000
                     task.wait(randomDelay)
-                    
-                    -- Add randomized mouse movements or other human-like behaviors
-                    if game.Players.LocalPlayer.Character then
+                                        if game.Players.LocalPlayer.Character then
                         local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
                         if humanoid and math.random(1, 100) <= 5 then
                             humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
@@ -1663,7 +1637,6 @@ SecuritySystem:AddToggle("SafeModeOperation", {
     Tooltip = "Limits operations to safer, less detectable ranges"
 })
 
--- Professional Notification System Enhancement
 local NotificationSystem = {
     Queue = {},
     MaxNotifications = 5,
@@ -1677,7 +1650,6 @@ function NotificationSystem:Show(title, description, duration, notificationType)
         Time = duration or self.DefaultDuration,
     }
     
-    -- Add color coding based on notification type
     if notificationType == "success" then
         notifyConfig.Color = MenuConfig.Theme.Success
     elseif notificationType == "warning" then
@@ -1689,7 +1661,6 @@ function NotificationSystem:Show(title, description, duration, notificationType)
     Library:Notify(notifyConfig)
 end
 
--- Professional Teleportation System Enhancement
 local TeleportationSystem = Tabs.Main:AddRightGroupbox("Advanced Teleportation")
 
 TeleportationSystem:AddLabel("Professional Transport System", true)
@@ -1789,7 +1760,6 @@ TeleportationSystem:AddButton({
     Tooltip = "Transport to selected destination with safety protocols"
 })
 
--- Professional Status Monitor
 local StatusMonitor = Tabs.Main:AddLeftGroupbox("System Status Monitor")
 
 StatusMonitor:AddLabel("Real-time System Information", true)
@@ -1824,23 +1794,18 @@ StatusMonitor:AddToggle("StatusMonitoring", {
                 local Stats = game:GetService("Stats")
                 
                 while StatusConfig.Monitoring do
-                    -- Calculate FPS
                     local fps = math.floor(1 / RunService.Heartbeat:Wait())
                     StatusConfig.Stats.FPS = fps
                     
-                    -- Get ping
                     local ping = math.floor(Players.LocalPlayer:GetNetworkPing() * 1000)
                     StatusConfig.Stats.Ping = ping
                     
-                    -- Get memory usage (approximate)
                     local memory = math.floor(Stats:GetTotalMemoryUsageMb())
                     StatusConfig.Stats.Memory = memory
                     
-                    -- Get player count
                     local playerCount = #Players:GetPlayers()
                     StatusConfig.Stats.Players = playerCount
                     
-                    -- Update labels
                     statusLabels.fps:SetText(string.format("FPS: %d", fps))
                     statusLabels.ping:SetText(string.format("Ping: %d ms", ping))
                     statusLabels.memory:SetText(string.format("Memory: %d MB", memory))
@@ -1854,7 +1819,6 @@ StatusMonitor:AddToggle("StatusMonitoring", {
     Tooltip = "Monitors system performance and server statistics"
 })
 
--- Professional Settings System
 local SettingsSystem = Window:AddTab("System Configuration")
 local GeneralSettings = SettingsSystem:AddLeftGroupbox("General Settings")
 
@@ -1896,7 +1860,6 @@ GeneralSettings:AddDropdown("ThemeSelector", {
     Tooltip = "Select interface color theme"
 })
 
--- Professional Performance Settings
 local PerformanceSettings = SettingsSystem:AddRightGroupbox("Performance Settings")
 
 PerformanceSettings:AddLabel("System Optimization", true)
@@ -1914,7 +1877,6 @@ PerformanceSettings:AddToggle("OptimizedPerformance", {
     Callback = function(value)
         PerformanceConfig.OptimizedMode = value
         if value then
-            -- Implement performance optimizations
             game:GetService("RunService"):Set3dRenderingEnabled(true)
             NotificationSystem:Show("Performance", "Optimization enabled", 2, "success")
         end
@@ -1934,7 +1896,6 @@ PerformanceSettings:AddToggle("ReduceVisualEffects", {
     Tooltip = "Reduces visual effects for better performance"
 })
 
--- Professional Information Display
 local InfoSystem = SettingsSystem:AddLeftGroupbox("System Information")
 
 InfoSystem:AddLabel("Application Details", true)
@@ -1950,13 +1911,11 @@ InfoSystem:AddLabel(string.format("User: %s", player.Name))
 InfoSystem:AddLabel(string.format("User ID: %d", player.UserId))
 InfoSystem:AddLabel(string.format("Account Age: %d days", player.AccountAge))
 
--- Professional Footer
 InfoSystem:AddDivider()
 InfoSystem:AddLabel("Professional Edition v3.0", true)
 InfoSystem:AddLabel("Developed with advanced security protocols")
 InfoSystem:AddLabel("All operations logged and monitored")
 
--- Initialize Professional Systems
 task.spawn(function()
     NotificationSystem:Show("System Startup", "Professional interface initialized", 3, "success")
     task.wait(1)
