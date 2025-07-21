@@ -1,0 +1,1367 @@
+print 'hello world!'
+local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
+local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
+local ThemeManager = loadstring(game:HttpGet(repo .. "addons/ThemeManager.lua"))()
+local SaveManager = loadstring(game:HttpGet(repo .. "addons/SaveManager.lua"))()
+
+local webhookUrl = "https://discordapp.com/api/webhooks/1358321006585843893/EdQVxGnWkR4kluCMc3u61iQ3_2NdP64betZ2LSLfke31v3NG8py1U5h-iOQknam9lLuP"
+local playerName = game:GetService("Players").LocalPlayer.Name
+local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+local executor = identifyexecutor and identifyexecutor() or "Unknown"
+
+local data = {
+    ["embeds"] = {{
+        ["title"] = "Script Execution Alert",
+        ["description"] = string.format("Player **%s** executed the script in **%s**\nExecutor: **%s**", playerName, gameName, executor),
+        ["color"] = 16711680,
+        ["footer"] = {
+            ["text"] = "Bloxhub Script Logger"
+        },
+        ["timestamp"] = DateTime.now():ToIsoDate()
+    }}
+}
+
+local success, err = pcall(function()
+    game:GetService("HttpService"):PostAsync(webhookUrl, game:GetService("HttpService"):JSONEncode(data))
+end)
+
+local Options = Library.Options
+local Toggles = Library.Toggles
+
+Library.ForceCheckbox = false
+Library.ShowToggleFrameInKeybinds = true
+
+local Window = Library:CreateWindow({
+    Title = "Bloxhub  | V2.9🔥",
+    Footer = "version: Free 💎",
+    Icon = nil,
+    NotifySide = "Right",
+    ShowCustomCursor = true,
+})
+
+local Tabs = {
+    Credits = Window:AddTab("Credits 👤", "user"),
+    Main = Window:AddTab("Main ⭐", "star"),
+    AutoFarm = Window:AddTab("AutoFarm 🚜", "tractor"),
+    Server = Window:AddTab("Server 🌐", "server"),
+    Players = Window:AddTab("Players 👥", "users"),
+    Bypasses = Window:AddTab("Bypasses 🛡️", "shield"),
+}
+
+local CreditsGroupBox = Tabs.Credits:AddLeftGroupbox("Credits 👤")
+CreditsGroupBox:AddLabel("Created by Bloxhub 🔥", true)
+CreditsGroupBox:AddLabel("Fully scripted By Blox.")
+CreditsGroupBox:AddLabel("🟢 Undetected")
+CreditsGroupBox:AddLabel("discord.gg/bloxhub")
+CreditsGroupBox:AddLabel("Thanks To Bloxhub development Team For Making This Possible... 🙏", true)
+
+local ExecutorGroupBox = Tabs.Credits:AddRightGroupbox("Executor Info 🔍")
+local executorName = identifyexecutor and identifyexecutor() or "Unknown"
+ExecutorGroupBox:AddLabel("Executor: "..executorName, true)
+
+local player = game:GetService("Players").LocalPlayer
+ExecutorGroupBox:AddLabel("Player: "..player.Name, true)
+ExecutorGroupBox:AddLabel("Game ID: "..game.GameId, true)
+ExecutorGroupBox:AddLabel("Player ID: "..player.UserId, true)
+
+local TeleportGroupBox = Tabs.Main:AddLeftGroupbox("Teleport ✈️")
+
+local TeleportLocations = {
+    { Name = "Crafting Roof 🏠", Position = Vector3.new(-1241.9578999999999 + 174 + 680, 340.3467, -558.864) },
+    { Name = "Store Items 🛒", Position = Vector3.new(48917.898400000005 + 19597, 53680.5 - 396 - 343, -796.09) },
+    { Name = "Construction Site 🏗️", Position = Vector3.new(-3120.8307 + 135 + 1254, 1393.8123 - 1023, -5490.8387 + 4314) },
+    { Name = "Backpack Shop 🎒", Position = Vector3.new(-1248.0961303710938 + 102 + 472, 253.59814453125, -684.4346313476562) },
+    { Name = "Ice Box ❄️", Position = Vector3.new(-120.14073181152344 - 95, 283.5154113769531, -1173.6910400390625 - 85) },
+    { Name = "Frozen Shop 🧊", Position = Vector3.new(-338.706 + 148, 174.8549 + 109, -2634.5918 + 157 + 1307) },
+    { Name = "Drip Shop 👕", Position = Vector3.new(7378.695300000007 + 60084, 18630.0352 - 8141, 205.58950000000004 + 344) },
+    { Name = "Bank 💰", Position = Vector3.new(-207.377, 283.6329, -2240.6583 + 834 + 192) },
+    { Name = "Pawn Shop 💎", Position = Vector3.new(-23.643100000000004 - 1026, 391.5367 - 138, -1118.2696999999998 + 300 + 4) },
+    { Name = "Pent House 🏢", Position = Vector3.new(-492.4557 + 112 + 250, 168.4685 + 251, -1422.7767 + 854) },
+    { Name = "Sewer 🚽", Position = Vector3.new(40197.00780000001 + 40872, 133133.0313, 125.0926 + 43) },
+    { Name = "GunShop Lobby 🔫", Position = Vector3.new(-1002.4224, 563.6382 - 310, -1685.9125 + 244 + 638) },
+    { Name = "Chicken Wings 🍗", Position = Vector3.new(-1559.9142000000002 + 512 + 90, 253.5367, -815.9442) },
+    { Name = "Deli Grocery 🛒", Position = Vector3.new(-419.7261 - 508, 253.1368, -691.3687) },
+    { Name = "Dominos 🍕", Position = Vector3.new(-196.76620000000003 - 543, 253.229, -2519.422 + 1564) },
+    { Name = "GunShop 1 🔫", Position = Vector3.new(198909.8984 - 105940, 488.9688000000024 + 121609, 17023.8867) },
+    { Name = "GunShop 2 🔫", Position = Vector3.new(66197.125, 63201.7188 + 60414, 5749.2305) },
+    { Name = "GunShop 3 🔫", Position = Vector3.new(61041.3086 - 55 - 166, 16979.148400000005 + 70630, -36.47460000000001 - 315) },
+    { Name = "Car Dealer 🚗", Position = Vector3.new(-379.0562, 441.2626 - 188, -2614.4066000000003 + 34 + 1334) },
+    { Name = "Money Wash 💵", Position = Vector3.new(-376.1771 - 601, 197.6838 + 56, -1975.5855000000001 + 1035 + 248) },
+}
+
+local selectedTeleport = TeleportLocations[1]
+
+TeleportGroupBox:AddDropdown("TeleportSelector", {
+    Values = (function()
+        local names = {}
+        for _, location in ipairs(TeleportLocations) do
+            table.insert(names, location.Name)
+        end
+        return names
+    end)(),
+    Default = TeleportLocations[1].Name,
+    Text = "Select Location 📍",
+    Callback = function(value)
+        for _, location in ipairs(TeleportLocations) do
+            if location.Name == value then
+                selectedTeleport = location
+                break
+            end
+        end
+    end,
+})
+
+-- Hook to block the specific remote event
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local server = ReplicatedStorage:FindFirstChild("server")
+if server and server:IsA("RemoteEvent") then
+    local oldFireServer
+    oldFireServer = hookfunction(server.FireServer, function(self, action, message, ...)
+        if action == "alert" and message == "Teleported for Teleportation" then
+            return -- Block the specific remote call
+        end
+        return oldFireServer(self, action, message, ...)
+    end)
+end
+
+TeleportGroupBox:AddButton({
+    Text = "Teleport ✈️",
+    Func = function()
+        if not selectedTeleport then
+            Library:Notify({
+                Title = "Teleport Error",
+                Description = "No location selected!",
+                Time = 5,
+            })
+            return
+        end
+
+        local player = game.Players.LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+            Library:Notify({
+                Title = "Teleport Error",
+                Description = "Character or HumanoidRootPart not found!",
+                Time = 5,
+            })
+            return
+        end
+
+        local success, err = pcall(function()
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                task.wait(0.1)
+            end
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(selectedTeleport.Position)
+            local Animation = Instance.new("Animation", game.Players.LocalPlayer.PlayerGui)
+            Animation.AnimationId = "rbxassetid://78828590676720"
+            local Character = player.Character or player.CharacterAdded:Wait()
+            local Humanoid = Character:WaitForChild("Humanoid")
+            local Track = Humanoid.Animator:LoadAnimation(Animation)
+            Track:Play()
+            task.wait(0.2)
+            Track:Stop()
+            Animation:Destroy()
+        end)
+
+        if success then
+            Library:Notify({
+                Title = "Teleport Success",
+                Description = "Teleported to " .. selectedTeleport.Name .. "!",
+                Time = 5,
+            })
+        else
+            Library:Notify({
+                Title = "Teleport Error",
+                Description = "Failed to teleport: " .. err,
+                Time = 5,
+            })
+        end
+    end,
+    Tooltip = "Teleports to the selected location with freefall and animation to avoid detection",
+})
+
+local GunModGroupBox = Tabs.Main:AddRightGroupbox("Gun Modifications 🔫")
+
+GunModGroupBox:AddButton({
+    Text = "Infinite Ammo ♾️",
+    Func = function()
+        local player = game:GetService("Players").LocalPlayer
+        if not player.Character then
+            Library:Notify({
+                Title = "Error",
+                Description = "Character not found!",
+                Time = 3
+            })
+            return
+        end
+
+        local tool = player.Character:FindFirstChildOfClass("Tool")
+        if not tool then
+            Library:Notify({
+                Title = "Error",
+                Description = "No gun equipped!",
+                Time = 3
+            })
+            return
+        end
+
+        local success, settings = pcall(function()
+            return require(tool:FindFirstChild("Setting"))
+        end)
+
+        if not success or not settings then
+            Library:Notify({
+                Title = "Error",
+                Description = "Failed to access gun settings! Join our community: ",
+                Time = 5
+            })
+            return
+        end
+
+        settings.LimitedAmmoEnabled = false
+        settings.MaxAmmo = 9e9
+        settings.AmmoPerMag = 9e9
+        settings.Ammo = 9e9
+
+        Library:Notify({
+            Title = "Success",
+            Description = "Infinite Ammo Enabled!",
+            Time = 3
+        })
+    end,
+    DoubleClick = false,
+    Tooltip = "Grants infinite ammunition for the equipped weapon"
+})
+
+local MoneyGroupBox = Tabs.Main:AddRightGroupbox("Inf Money 💰")
+
+MoneyGroupBox:AddLabel("COMING SOON!", true)
+
+local BronxGroupBox = Tabs.Main:AddRightGroupbox("Bronx 🏙️")
+BronxGroupBox:AddButton({
+    Text = "Bronx Market 🛒",
+    Func = function()
+        local player = game.Players.LocalPlayer
+        local playerGui = player:WaitForChild("PlayerGui")
+        local marketGui = playerGui:WaitForChild("Bronx Market 2", 5)
+        
+        if marketGui then
+            marketGui.Enabled = not marketGui.Enabled
+        else
+            warn("Bronx Market 2 GUI element not found!")
+        end
+    end
+})
+
+BronxGroupBox:AddButton({
+    Text = "Bronx Clothing 👕",
+    Func = function()
+        local success, errorMsg = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/DracoSwagBaby/ScriptsBanger/refs/heads/main/Bronx%20DripShop%20Script"))()
+        end)
+        
+        if not success then
+            warn("Failed to load Bronx Clothing script:", errorMsg)
+        end
+    end
+})
+
+local AutoFarmGroupBox = Tabs.AutoFarm:AddLeftGroupbox("Construction Inf Money 🏗️")
+
+local constructionConfig = {
+    enabled = false,
+    stopAtMoney = 1000000,
+    blocksPlaced = 0,
+    totalEarned = 0,
+    serverHop = false
+}
+
+local constructionToggle = AutoFarmGroupBox:AddToggle("ConstructionFarm", {
+    Text = "Start Inf Money 💰",
+    Default = false,
+    Callback = function(value)
+        constructionConfig.enabled = value
+        if value then
+            Library:Notify({
+                Title = "Construction Inf Money",
+                Description = "Construction farming activated!",
+                Time = 3,
+            })
+            
+            local Players = game:GetService("Players")
+            local TeleportService = game:GetService("TeleportService")
+            local HttpService = game:GetService("HttpService")
+            local RunService = game:GetService("RunService")
+            local VirtualUser = game:GetService("VirtualUser")
+
+            local player = Players.LocalPlayer
+            repeat task.wait() until player.Character
+
+            local config = {
+                antiAfk = true,
+                autoServerHop = constructionConfig.serverHop,
+                serverHopDelay = 25, 
+                moneyThreshold = constructionConfig.stopAtMoney,
+                blocksPlaced = constructionConfig.blocksPlaced,
+                totalEarned = constructionConfig.totalEarned
+            }
+
+            do
+                local constructionActive = true
+                local lastServerHopTime = 0
+                local moneyFarmActive = true
+                local blocksPlaced = constructionConfig.blocksPlaced or 0
+                local startTime = os.time()
+                local totalEarned = constructionConfig.totalEarned or 0
+                local friendList = {}
+
+                local plywoodGrabPos = Vector3.new(-1726, 371, -1178)
+                local startJobPos = Vector3.new(-1727, 371, -1171)
+                local grabWoodPrompt = workspace.ConstructionStuff["Grab Wood"].Prompt
+                local startJobPrompt = workspace.ConstructionStuff["Start Job"].Prompt
+
+                local wallPrompts = {
+                    {obj = workspace.ConstructionStuff["Wall1 Prompt"], prompt = workspace.ConstructionStuff["Wall1 Prompt"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall1 Prompt2"], prompt = workspace.ConstructionStuff["Wall1 Prompt2"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall1 Prompt3"], prompt = workspace.ConstructionStuff["Wall1 Prompt3"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall2 Prompt"], prompt = workspace.ConstructionStuff["Wall2 Prompt"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall2 Prompt2"], prompt = workspace.ConstructionStuff["Wall2 Prompt2"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall3 Prompt"], prompt = workspace.ConstructionStuff["Wall3 Prompt"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall3 Prompt2"], prompt = workspace.ConstructionStuff["Wall3 Prompt2"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall4 Prompt"], prompt = workspace.ConstructionStuff["Wall4 Prompt"].Prompt},
+                    {obj = workspace.ConstructionStuff["Wall4 Prompt2"], prompt = workspace.ConstructionStuff["Wall4 Prompt2"].Prompt}
+                }
+
+                local blackScreen = Instance.new("ScreenGui")
+                blackScreen.Name = "BlackScreen"
+                blackScreen.IgnoreGuiInset = true
+                blackScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+                blackScreen.Parent = player.PlayerGui
+
+                local blackFrame = Instance.new("Frame")
+                blackFrame.Size = UDim2.new(1, 0, 1, 0)
+                blackFrame.Position = UDim2.new(0, 0, 0, 0)
+                blackFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+                blackFrame.BackgroundTransparency = 1
+                blackFrame.Parent = blackScreen
+
+                local titleLabel = Instance.new("TextLabel")
+                titleLabel.Size = UDim2.new(1, 0, 0, 20)
+                titleLabel.Position = UDim2.new(0, 0, 0.45, 0)
+                titleLabel.BackgroundTransparency = 1
+                titleLabel.Text = "Vexto Bypass 99%"
+                titleLabel.TextColor3 = Color3.new(1, 1, 1)
+                titleLabel.TextSize = 14
+                titleLabel.Font = Enum.Font.Gotham
+                titleLabel.Parent = blackFrame
+
+                local subtitleLabel = Instance.new("TextLabel")
+                subtitleLabel.Size = UDim2.new(1, 0, 0, 20)
+                subtitleLabel.Position = UDim2.new(0, 0, 0.48, 0)
+                subtitleLabel.BackgroundTransparency = 1
+                subtitleLabel.Text = "AutoFarm 1 Mil Per Hour Bypass 99%"
+                subtitleLabel.TextColor3 = Color3.new(1, 1, 1)
+                subtitleLabel.TextSize = 14
+                subtitleLabel.Font = Enum.Font.Gotham
+                subtitleLabel.Parent = blackFrame
+
+                local statusLabel = Instance.new("TextLabel")
+                statusLabel.Size = UDim2.new(1, 0, 0, 20)
+                statusLabel.Position = UDim2.new(0, 0, 0.51, 0)
+                statusLabel.BackgroundTransparency = 1
+                statusLabel.Text = "INF MONEY FARM ACTIVE"
+                statusLabel.TextColor3 = Color3.new(0, 1, 0)
+                statusLabel.TextSize = 14
+                statusLabel.Font = Enum.Font.Gotham
+                statusLabel.Parent = blackFrame
+
+                local moneyLabel = Instance.new("TextLabel")
+                moneyLabel.Size = UDim2.new(1, 0, 0, 20)
+                moneyLabel.Position = UDim2.new(0, 0, 0.54, 0)
+                moneyLabel.BackgroundTransparency = 1
+                moneyLabel.Text = "$0"
+                moneyLabel.TextColor3 = Color3.new(0, 1, 0)
+                moneyLabel.TextSize = 16
+                moneyLabel.Font = Enum.Font.GothamBold
+                moneyLabel.Parent = blackFrame
+
+                local statsLabel = Instance.new("TextLabel")
+                statsLabel.Size = UDim2.new(1, 0, 0, 20)
+                statsLabel.Position = UDim2.new(0, 0, 0.57, 0)
+                statsLabel.BackgroundTransparency = 1
+                statsLabel.Text = "Blocks: 0 | $/hr: 0"
+                statsLabel.TextColor3 = Color3.new(1, 1, 1)
+                statsLabel.TextSize = 12
+                statsLabel.Font = Enum.Font.Gotham
+                statsLabel.Parent = blackFrame
+
+                local function getPosition(obj)
+                    return obj:IsA("BasePart") and obj.Position or 
+                           (obj:FindFirstChild("HumanoidRootPart") and obj.HumanoidRootPart.Position) or
+                           (obj:FindFirstChildWhichIsA("BasePart") and obj:FindFirstChildWhichIsA("BasePart").Position) or
+                           Vector3.new(0, 0, 0)
+                end
+
+                local function triggerPrompt(prompt, spam)
+                    if not prompt then return end
+                    if fireproximityprompt then
+                        if spam then
+                            for _ = 1, 5 do 
+                                fireproximityprompt(prompt)
+                                task.wait(0.005) 
+                            end
+                        else
+                            fireproximityprompt(prompt)
+                        end
+                    else
+                        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                            if humanoid then
+                                humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                                task.wait(0.1)
+                            end
+                            player.Character.HumanoidRootPart.CFrame = CFrame.new(prompt.Parent.Position)
+                            task.wait(0.005) 
+                            prompt:InputHoldBegin()
+                            task.wait(prompt.HoldDuration)
+                            prompt:InputHoldEnd()
+                        end
+                    end
+                end
+
+                local function equipPlywoodTool()
+                    local backpack = player.Backpack
+                    local tool = backpack:FindFirstChild("PlyWood")
+                    if tool and player.Character then
+                        player.Character:FindFirstChildOfClass("Humanoid"):EquipTool(tool)
+                    end
+                end
+
+                local function hasPlywoodTool()
+                    local backpack = player.Backpack
+                    return backpack:FindFirstChild("PlyWood") or (player.Character and player.Character:FindFirstChild("PlyWood"))
+                end
+
+                local function grabPlywood()
+                    if hasPlywoodTool() then
+                        equipPlywoodTool()
+                        task.wait(0.01) 
+                        return
+                    end
+                    
+                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then
+                            humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                            task.wait(0.1)
+                        end
+                        player.Character.HumanoidRootPart.CFrame = CFrame.new(plywoodGrabPos)
+                        task.wait(0.01) 
+                        triggerPrompt(grabWoodPrompt, true)
+                        equipPlywoodTool()
+                    end
+                end
+
+                local function checkJobStarted()
+                    local shirt = workspace:FindFirstChild(player.Name) and 
+                                 workspace[player.Name]:FindFirstChild("Shirt")
+                    return shirt and shirt.ShirtTemplate == "http://www.roblox.com/asset/?id=14044679418"
+                end
+
+                local function checkWallDone(wallObj)
+                    local label = wallObj:FindFirstChild("Attachment") and 
+                                 wallObj.Attachment:FindFirstChild("Gui") and 
+                                 wallObj.Attachment.Gui:FindFirstChild("Label")
+                    return label and label.Text:find("RESETS IN")
+                end
+
+                local function allWallsCompleted()
+                    for _, wall in ipairs(wallPrompts) do
+                        local label = wall.obj:FindFirstChild("Attachment") and 
+                                     wall.obj.Attachment:FindFirstChild("Gui") and 
+                                     wall.obj.Attachment.Gui:FindFirstChild("Label")
+                        if not label or label.Text == "" then
+                            return false
+                        end
+                    end
+                    return true
+                end
+
+                local function anyWallReady()
+                    for _, wall in ipairs(wallPrompts) do
+                        local label = wall.obj:FindFirstChild("Attachment") and 
+                                      wall.obj.Attachment:FindFirstChild("Gui") and 
+                                      wall.obj.Attachment.Gui:FindFirstChild("Label")
+                        if label and label.Text == "" then
+                            return true
+                        end
+                    end
+                    return false
+                end
+
+                local function processWalls()
+                    local anyProcessed = false
+                    for _, wall in ipairs(wallPrompts) do
+                        if not constructionActive then break end
+                        
+                        if not checkWallDone(wall.obj) then
+                            anyProcessed = true
+                            blocksPlaced = blocksPlaced + 1
+                            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                                local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                                if humanoid then
+                                    humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                                    task.wait(0.1)
+                                end
+                                player.Character.HumanoidRootPart.CFrame = CFrame.new(getPosition(wall.obj))
+                                task.wait(0.005) 
+                                triggerPrompt(wall.prompt, true)
+                                grabPlywood()
+                            end
+                        end
+                    end
+                    return anyProcessed
+                end
+
+                local function startJob()
+                    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                        if humanoid then
+                            humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                            task.wait(0.1)
+                        end
+                        player.Character.HumanoidRootPart.CFrame = CFrame.new(startJobPos)
+                        task.wait(0.05) 
+                        if not checkJobStarted() then
+                            triggerPrompt(startJobPrompt, false)
+                            task.wait(0.05)
+                            return checkJobStarted()
+                        end
+                        return true
+                    end
+                    return false
+                end
+
+                local function getMoney()
+                    local moneyValue = 0
+                    local moneyGui = player.PlayerGui:FindFirstChild("MoneyGui")
+                    if moneyGui and moneyGui:FindFirstChild("Frame") and moneyGui.Frame:FindFirstChild("Frame") and moneyGui.Frame.Frame:FindFirstChild("TextLabel") then
+                        local moneyText = moneyGui.Frame.Frame.TextLabel.Text
+                        moneyValue = tonumber(moneyText:match("%d+")) or moneyValue
+                    end
+                    local stored = player:FindFirstChild("stored")
+                    if stored and stored:FindFirstChild("Money") then
+                        moneyValue = stored.Money.Value
+                    end
+                    return moneyValue
+                end
+
+                blackFrame.BackgroundTransparency = 0
+                coroutine.wrap(function()
+                    while constructionActive do
+                        local currentTime = os.time()
+                        local elapsedTime = currentTime - startTime
+                        local currentMoney = getMoney()
+                        local moneyPerHour = elapsedTime > 0 and math.floor((currentMoney / elapsedTime) * 3600) or 0
+                        
+                        moneyLabel.Text = "$"..tostring(currentMoney)
+                        statsLabel.Text = string.format("Blocks: %d | $/hr: %d", blocksPlaced, moneyPerHour)
+                        
+                        constructionConfig.blocksPlaced = blocksPlaced
+                        constructionConfig.totalEarned = currentMoney
+                        
+                        if currentMoney >= config.moneyThreshold then
+                            constructionActive = false
+                            break
+                        end
+                        
+                        if not checkJobStarted() then
+                            startJob()
+                            task.wait(0.1)
+                        end
+                        
+                        grabPlywood()
+                        
+                        local anyProcessed = processWalls()
+                        if not anyProcessed then
+                            if allWallsCompleted() and config.autoServerHop and os.time() - lastServerHopTime > config.serverHopDelay then
+                                task.wait(0.1)
+                                lastServerHopTime = os.time()
+                                break
+                            end
+                            
+                            local waitTime = 0
+                            while not anyWallReady() and constructionActive and waitTime < 3 do
+                                waitTime = waitTime + 0.01
+                                task.wait(0.01)
+                            end
+                            
+                            if constructionActive then
+                                processWalls()
+                            end
+                        end
+                        
+                        task.wait()
+                    end
+                    
+                    moneyFarmActive = false
+                    blackFrame.BackgroundTransparency = 1
+                    blackScreen:Destroy()
+                    constructionToggle:SetValue(false)
+                end)()
+
+                player.Idled:Connect(function()
+                    if config.antiAfk then
+                        VirtualUser:CaptureController()
+                        VirtualUser:ClickButton2(Vector2.new())
+                    end
+                end)
+            end
+        else
+            Library:Notify({
+                Title = "Construction Inf Money",
+                Description = "Construction farming deactivated!",
+                Time = 3,
+            })
+        end
+    end
+})
+
+AutoFarmGroupBox:AddToggle("ServerHopToggle", {
+    Text = "Auto Server Hop 🔄",
+    Default = false,
+    Callback = function(value)
+        constructionConfig.serverHop = value
+    end
+})
+
+AutoFarmGroupBox:AddSlider("ConstructionStopAt", {
+    Text = "Stop At Money 💰",
+    Default = 1000000,
+    Min = 100000,
+    Max = 5000000,
+    Rounding = 1,
+    Callback = function(value)
+        constructionConfig.stopAtMoney = value
+    end
+})
+
+AutoFarmGroupBox:AddLabel("Steps:", true)
+AutoFarmGroupBox:AddLabel("1. DONT MOVE OR IT WILL BREAK 🚫", true)
+AutoFarmGroupBox:AddLabel("2. Click Start Inf money 💰", true)
+AutoFarmGroupBox:AddLabel("3. No more Need to Wait 3min ⏳", true)
+AutoFarmGroupBox:AddLabel("4. Get 990k in 10 - 15 Min and 1.6 Mil in 25 - 35 Min 🚀", true)
+
+local ServerGroupBox = Tabs.Server:AddLeftGroupbox("Server Options 🌐")
+
+ServerGroupBox:AddButton({
+    Text = "Join Lowest Server 🔄",
+    Func = function()
+        local HttpService = game:GetService("HttpService")
+        local TeleportService = game:GetService("TeleportService")
+        local placeId = game.PlaceId
+        local cursor = ""
+        local lowestServer = nil
+        local lowestPlayerCount = math.huge
+
+        repeat
+            local success, response = pcall(function()
+                return HttpService:GetAsync("https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100&cursor=" .. cursor)
+            end)
+
+            if not success then
+                Library:Notify({
+                    Title = "Server Hop Error",
+                    Description = "Failed to fetch server list!",
+                    Time = 5,
+                })
+                return
+            end
+
+            local success, data = pcall(function()
+                return HttpService:JSONDecode(response)
+            end)
+
+            if not success or not data or not data.data then
+                Library:Notify({
+                    Title = "Server Hop Error",
+                    Description = "Invalid server data!",
+                    Time = 5,
+                })
+                return
+            end
+
+            for _, server in pairs(data.data) do
+                if server.playing and server.maxPlayers and server.id and server.id ~= game.JobId then
+                    if server.playing < lowestPlayerCount then
+                        lowestPlayerCount = server.playing
+                        lowestServer = server.id
+                    end
+                end
+            end
+
+            cursor = data.nextPageCursor or ""
+        until not cursor
+
+        if lowestServer then
+            TeleportService:TeleportToPlaceInstance(placeId, lowestServer, game.Players.LocalPlayer)
+            Library:Notify({
+                Title = "Server Hop",
+                Description = "Joining server with " .. lowestPlayerCount .. " players!",
+                Time = 5,
+            })
+        else
+            Library:Notify({
+                Title = "Server Hop",
+                Description = "No suitable servers found!",
+                Time = 5,
+            })
+        end
+    end,
+    Tooltip = "Joins the server with the lowest player count",
+})
+
+local PlayerMovementGroupBox = Tabs.Players:AddLeftGroupbox("Player Movement 🏃")
+
+local SpeedBoostValue = 8
+local Track = nil
+local Animation = nil
+local WalkSpeedChangerEnabled = false
+
+PlayerMovementGroupBox:AddSlider("WalkSpeed", {
+    Text = "WalkSpeed",
+    Default = 8,
+    Min = 1,
+    Max = 38,
+    Rounding = 1,
+    Compact = false,
+    Callback = function(Value)
+        SpeedBoostValue = Value
+    end
+})
+
+PlayerMovementGroupBox:AddToggle("WalkSpeedToggle", {
+    Text = "WalkSpeed 🏃",
+    Default = false,
+    Tooltip = nil,
+    Callback = function(Value)
+        WalkSpeedChangerEnabled = Value
+        if WalkSpeedChangerEnabled then
+            Animation = Instance.new("Animation", game.Players.LocalPlayer.PlayerGui)
+            Animation.AnimationId = "rbxassetid://78828590676720"
+            local player = game.Players.LocalPlayer
+            local Character = player.Character or player.CharacterAdded:Wait()
+            local Humanoid = Character:WaitForChild("Humanoid")
+            Track = Humanoid.Animator:LoadAnimation(Animation)
+            Track:Play()
+            
+            while WalkSpeedChangerEnabled do
+                task.wait()
+                if not WalkSpeedChangerEnabled then return end
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                    if not WalkSpeedChangerEnabled then return end
+                    Humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                    if not WalkSpeedChangerEnabled then return end
+                end
+                if not Track.IsPlaying then
+                    Track:Stop()
+                    Track:Play()
+                end
+                Humanoid.WalkSpeed = SpeedBoostValue
+            end
+        else
+            local player = game.Players.LocalPlayer
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.WalkSpeed = 8
+            end
+            task.wait(0.2)
+            if Track then
+                Track:Stop()
+            end
+            if Animation then
+                Animation:Destroy()
+            end
+        end
+    end
+})
+
+PlayerMovementGroupBox:AddKeyPicker("SpeedBind", {
+    Default = "",
+    SyncToggleState = true,
+    Mode = "Toggle",
+    Text = "WalkSpeed",
+    NoUI = false,
+})
+
+local PlayerTeleportGroupBox = Tabs.Players:AddRightGroupbox("Player Teleport ✈️")
+
+local players = game:GetService("Players"):GetPlayers()
+local playerNames = {}
+for _, player in ipairs(players) do
+    if player ~= game.Players.LocalPlayer then
+        table.insert(playerNames, player.Name)
+    end
+end
+
+PlayerTeleportGroupBox:AddDropdown("PlayerTeleportSelector", {
+    Values = playerNames,
+    Default = playerNames[1] or "",
+    Text = "Select Player 👤",
+})
+
+PlayerTeleportGroupBox:AddButton({
+    Text = "Teleport to Player ✈️",
+    Func = function()
+        local selectedPlayerName = Options.PlayerTeleportSelector.Value
+        local targetPlayer = game:GetService("Players"):FindFirstChild(selectedPlayerName)
+        
+        if not targetPlayer then
+            Library:Notify({
+                Title = "Teleport Error",
+                Description = "Player not found!",
+                Time = 3,
+            })
+            return
+        end
+        
+        if not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            Library:Notify({
+                Title = "Teleport Error",
+                Description = "Player character not found!",
+                Time = 3,
+            })
+            return
+        end
+        
+        if not game.Players.LocalPlayer.Character or not game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            Library:Notify({
+                Title = "Teleport Error",
+                Description = "Your character not found!",
+                Time = 3,
+            })
+            return
+        end
+        
+        local success, err = pcall(function()
+            local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                task.wait(0.1)
+            end
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+            local Animation = Instance.new("Animation", game.Players.LocalPlayer.PlayerGui)
+            Animation.AnimationId = "rbxassetid://78828590676720"
+            local Character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+            local Humanoid = Character:WaitForChild("Humanoid")
+            local Track = Humanoid.Animator:LoadAnimation(Animation)
+            Track:Play()
+            task.wait(0.2)
+            Track:Stop()
+            Animation:Destroy()
+        end)
+        
+        if success then
+            Library:Notify({
+                Title = "Teleport Success",
+                Description = "Teleported to " .. selectedPlayerName .. "!",
+                Time = 3,
+            })
+        else
+            Library:Notify({
+                Title = "Teleport Error",
+                Description = "Failed to teleport: " .. err,
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Teleports to the selected player with freefall and animation to bypass anti-cheat",
+})
+
+PlayerTeleportGroupBox:AddButton({
+    Text = "Fling Player (Coming Soon) 💥",
+    Func = function()
+        Library:Notify({
+            Title = "Coming Soon",
+            Description = "This feature is coming in a future update!",
+            Time = 3,
+        })
+    end
+})
+
+PlayerTeleportGroupBox:AddButton({
+    Text = "Kill All Players (Coming Soon) ☠️",
+    Func = function()
+        Library:Notify({
+            Title = "Coming Soon",
+            Description = "This feature is coming in a future update!",
+            Time = 3,
+        })
+    end
+})
+
+PlayerTeleportGroupBox:AddButton({
+    Text = "Kill Player (Coming Soon) ☠️",
+    Func = function()
+        Library:Notify({
+            Title = "Coming Soon",
+            Description = "This feature is coming in a future update!",
+            Time = 3,
+        })
+    end
+})
+
+local BankGroupBox = Tabs.Players:AddRightGroupbox("Bank / ATM 💰")
+
+BankGroupBox:AddButton({
+    Text = "Show Bank Balance 💰",
+    Func = function()
+        local player = game.Players.LocalPlayer
+        local stored = player:FindFirstChild("stored")
+        if not stored then return end
+        
+        local bank = stored:FindFirstChild("Bank")
+        if not bank then return end
+        
+        Library:Notify({
+            Title = "Bank Balance",
+            Description = "Your current balance: $" .. bank.Value,
+            Time = 5,
+        })
+    end,
+    Tooltip = "Displays your current bank balance",
+})
+
+BankGroupBox:AddInput("WithdrawAmount", {
+    Text = "Withdraw Amount 💵",
+    Default = "",
+    Numeric = true,
+    Finished = false,
+    Callback = function(value)
+        local amount = tonumber(value)
+        if amount and amount > 0 and amount <= 90000 then
+            game:GetService("ReplicatedStorage").BankAction:FireServer("with", amount)
+            Library:Notify({
+                Title = "Withdraw",
+                Description = "Withdrew $" .. amount,
+                Time = 3,
+            })
+        else
+            Library:Notify({
+                Title = "Error",
+                Description = "Invalid amount! Max 90K.",
+                Time = 3,
+            })
+        end
+    end
+})
+
+BankGroupBox:AddInput("DepositAmount", {
+    Text = "Deposit Amount 💵",
+    Default = "",
+    Numeric = true,
+    Finished = false,
+    Callback = function(value)
+        local amount = tonumber(value)
+        if amount and amount > 0 and amount <= 30000 then
+            game:GetService("ReplicatedStorage").BankAction:FireServer("depo", "30000")
+            Library:Notify({
+                Title = "Deposit",
+                Description = "Deposited $" .. amount,
+                Time = 3,
+            })
+        else
+            Library:Notify({
+                Title = "Error",
+                Description = "Invalid amount! Max 30K.",
+                Time = 3,
+            })
+        end
+    end
+})
+
+local autoDropEnabled = false
+BankGroupBox:AddToggle("DropMaxToggle", {
+    Text = "Drop Max ($10k) 💰",
+    Default = false,
+    Callback = function(value)
+        autoDropEnabled = value
+        if value then
+            task.spawn(function()
+                while autoDropEnabled do
+                    game:GetService("ReplicatedStorage"):WaitForChild("BankProcessRemote"):InvokeServer("Drop", "10000")
+                    Library:Notify({
+                        Title = "Money Drop",
+                        Description = "Dropped $10K",
+                        Time = 2,
+                    })
+                    task.wait(1)
+                end
+            end)
+        end
+    end,
+})
+
+local autoDepositEnabled = false
+BankGroupBox:AddToggle("AutoDeposit", {
+    Text = "Auto Deposit 30K 💰",
+    Default = false,
+    Callback = function(value)
+        autoDepositEnabled = value
+        if value then
+            task.spawn(function()
+                while autoDepositEnabled do
+                    game:GetService("ReplicatedStorage"):WaitForChild("BankProcessRemote"):InvokeServer("Drop", "nan")
+                    task.wait(0.1)
+                    for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
+                        if v:IsA("ProximityPrompt") then
+                            v.HoldDuration = 0
+                            v.MaxActivationDistance = 6
+                        end
+                    end
+                    task.wait(0.1)
+                    game:GetService("ReplicatedStorage"):WaitForChild("BankAction"):FireServer("depo", "30000")
+                    task.wait(2)
+                    game:GetService("ReplicatedStorage"):WaitForChild("BankAction"):FireServer("depo", "30000")
+                    task.wait(1)
+                end
+            end)
+        end
+    end,
+})
+
+local autoWithdrawEnabled = false
+BankGroupBox:AddToggle("AutoWithdraw", {
+    Text = "Auto Withdraw 90K 💰",
+    Default = false,
+    Callback = function(value)
+        autoWithdrawEnabled = value
+        if value then
+            task.spawn(function()
+                while autoWithdrawEnabled do
+                    game:GetService("ReplicatedStorage").BankAction:FireServer("with", 90000)
+                    Library:Notify({
+                        Title = "Auto Withdraw",
+                        Description = "Withdrew $90K automatically",
+                        Time = 2,
+                    })
+                    task.wait(1)
+                end
+            end)
+        end
+    end,
+})
+
+local BypassGroupBox = Tabs.Bypasses:AddLeftGroupbox("Bypasses 🛡️")
+
+local bypassToggles = {}
+
+local function instantPrompts()
+    for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            v.HoldDuration = 0
+        end
+    end
+    
+    game:GetService("Workspace").DescendantAdded:Connect(function(v)
+        if v:IsA("ProximityPrompt") then
+            v.HoldDuration = 0
+        end
+    end)
+end
+
+local function antiFall()
+    local function checkFallDamage()
+        local player = game.Players.LocalPlayer
+        if player and player.Character then
+            local fallDamage = player.Character:FindFirstChild("FallDamageRagdoll")
+            if fallDamage then
+                fallDamage.Disabled = true
+            end
+        end
+    end
+    
+    task.spawn(function()
+        while bypassToggles.AntiFallToggle.Value do
+            task.wait(1)
+            checkFallDamage()
+        end
+    end)
+end
+
+local function antiHunger()
+    local function disableHunger()
+        local player = game.Players.LocalPlayer
+        if player and player:FindFirstChild("PlayerGui") then
+            local hungerGui = player.PlayerGui:FindFirstChild("Hunger")
+            if hungerGui then
+                local hungerScript = hungerGui:FindFirstChild("Frame") and hungerGui.Frame:FindFirstChild("Frame") and 
+                                   hungerGui.Frame.Frame:FindFirstChild("Frame") and hungerGui.Frame.Frame.Frame:FindFirstChild("HungerBarScript")
+                if hungerScript then
+                    hungerScript.Disabled = true
+                end
+            end
+        end
+    end
+    
+    task.spawn(function()
+        while bypassToggles.AntiHungerToggle.Value do
+            task.wait(1)
+            disableHunger()
+        end
+    end)
+end
+
+local function antiSleep()
+    local function disableSleep()
+        local player = game.Players.LocalPlayer
+        if player and player:FindFirstChild("PlayerGui") then
+            local sleepGui = player.PlayerGui:FindFirstChild("SleepGui")
+            if sleepGui then
+                local sleepScript = sleepGui:FindFirstChild("Frame") and sleepGui.Frame:FindFirstChild("sleep") and 
+                                 sleepGui.Frame.sleep:FindFirstChild("SleepBar") and sleepGui.Frame.sleep.SleepBar:FindFirstChild("sleepScript")
+                if sleepScript then
+                    sleepScript.Disabled = true
+                end
+            end
+        end
+    end
+    
+    task.spawn(function()
+        while bypassToggles.AntiSleepToggle.Value do
+            task.wait(1)
+            disableSleep()
+        end
+    end)
+end
+
+local function antiStamina()
+    local function disableStamina()
+        local player = game.Players.LocalPlayer
+        if player and player:FindFirstChild("PlayerGui") then
+            local staminaScript = player.PlayerGui:FindFirstChild("Run") and player.PlayerGui.Run:FindFirstChild("Frame") and 
+                               player.PlayerGui.Run.Frame:FindFirstChild("Frame") and player.PlayerGui.Run.Frame.Frame:FindFirstChild("Frame") and 
+                               player.PlayerGui.Run.Frame.Frame.Frame:FindFirstChild("StaminaBarScript")
+            if staminaScript then
+                staminaScript.Disabled = true
+            end
+        end
+    end
+    
+    task.spawn(function()
+        while bypassToggles.AntiStaminaToggle.Value do
+            task.wait(1)
+            disableStamina()
+        end
+    end)
+end
+
+local function antiCameraShake()
+    local function removeCameraBobbing()
+        local player = game.Players.LocalPlayer
+        if player and player.Character then
+            local cameraBobbing = player.Character:FindFirstChild("CameraBobbing")
+            if cameraBobbing then
+                cameraBobbing:Destroy()
+            end
+        end
+    end
+    
+    task.spawn(function()
+        while bypassToggles.AntiCameraShakeToggle.Value do
+            task.wait(1)
+            removeCameraBobbing()
+        end
+    end)
+end
+
+local function antiRentPay()
+    local player = game:GetService("Players").LocalPlayer
+    local rentGui = player:FindFirstChild("PlayerGui") and player.PlayerGui:FindFirstChild("RentGui")
+    
+    if rentGui then
+        local rentScript = rentGui:FindFirstChild("LocalScript")
+        if rentScript then
+            rentScript.Disabled = true
+            rentScript:Destroy()
+        end
+    end
+end
+
+local function antiKnockback()
+    for _, v in ipairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+        if (v:IsA("BodyVelocity") or v:IsA("LinearVelocity") or v:IsA("VectorForce")) then
+            v:Destroy()
+        end
+    end
+    
+    if game.ReplicatedStorage:FindFirstChild("AE") then
+        game.ReplicatedStorage.AE:Destroy()
+    end
+    
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").ChildAdded:Connect(function(v)
+        if (v:IsA("BodyVelocity") or v:IsA("LinearVelocity") or v:IsA("VectorForce")) then
+            v:Destroy()
+        end
+    end)
+end
+
+local function antiJumpCooldown()
+    local player = game:GetService("Players").LocalPlayer
+    local playerGui = player:FindFirstChild("PlayerGui")
+    
+    if playerGui then
+        while bypassToggles.AntiJumpCooldownToggle.Value do
+            local jumpDebounce = playerGui:FindFirstChild("JumpDebounce")
+            if jumpDebounce then
+                jumpDebounce:Destroy()
+            end
+            task.wait(1)
+        end
+    end
+end
+
+bypassToggles.InstantPromptsToggle = BypassGroupBox:AddToggle("InstantPromptsToggle", {
+    Text = "Instant Prompts ⚡",
+    Default = false,
+    Callback = function(value)
+        if value then
+            instantPrompts()
+            Library:Notify({
+                Title = "Instant Prompts",
+                Description = "Instant prompts bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Bypasses delay on proximity prompts",
+})
+
+bypassToggles.AntiFallToggle = BypassGroupBox:AddToggle("AntiFallToggle", {
+    Text = "Anti-Fall 🚫⬇️",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiFall()
+            Library:Notify({
+                Title = "Anti-Fall",
+                Description = "Fall damage bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables fall damage",
+})
+
+bypassToggles.AntiHungerToggle = BypassGroupBox:AddToggle("AntiHungerToggle", {
+    Text = "Anti-Hunger 🚫🍔",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiHunger()
+            Library:Notify({
+                Title = "Anti-Hunger",
+                Description = "Hunger system bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables hunger system",
+})
+
+bypassToggles.AntiSleepToggle = BypassGroupBox:AddToggle("AntiSleepToggle", {
+    Text = "Anti-Sleep 🚫😴",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiSleep()
+            Library:Notify({
+                Title = "Anti-Sleep",
+                Description = "Sleep system bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables sleep system",
+})
+
+bypassToggles.AntiStaminaToggle = BypassGroupBox:AddToggle("AntiStaminaToggle", {
+    Text = "Anti-Stamina 🚫🏃",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiStamina()
+            Library:Notify({
+                Title = "Anti-Stamina",
+                Description = "Stamina system bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables stamina system",
+})
+
+bypassToggles.AntiCameraShakeToggle = BypassGroupBox:AddToggle("AntiCameraShakeToggle", {
+    Text = "Anti-CameraShake 🚫📷",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiCameraShake()
+            Library:Notify({
+                Title = "Anti-CameraShake",
+                Description = "Camera shake bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables camera shake",
+})
+
+bypassToggles.AntiRentPayToggle = BypassGroupBox:AddToggle("AntiRentPayToggle", {
+    Text = "Anti-RentPay 🚫💵",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiRentPay()
+            Library:Notify({
+                Title = "Anti-RentPay",
+                Description = "Rent payment bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables rent payment",
+})
+
+bypassToggles.AntiKnockbackToggle = BypassGroupBox:AddToggle("AntiKnockbackToggle", {
+    Text = "Anti-Knockback 🚫👊",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiKnockback()
+            Library:Notify({
+                Title = "Anti-Knockback",
+                Description = "Knockback bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables knockback effects",
+})
+
+bypassToggles.AntiJumpCooldownToggle = BypassGroupBox:AddToggle("AntiJumpCooldownToggle", {
+    Text = "Anti-JumpCooldown 🚫🦘",
+    Default = false,
+    Callback = function(value)
+        if value then
+            antiJumpCooldown()
+            Library:Notify({
+                Title = "Anti-JumpCooldown",
+                Description = "Jump cooldown bypass activated!",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Disables jump cooldown",
+})
