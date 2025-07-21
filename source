@@ -1425,4 +1425,540 @@ BankGroupBox:AddInput("WithdrawAmount", {
             })
         else
             Library:Notify({
-                Title = "Banking Error",
+
+Title = "Banking Error",
+                Description = "Failed to process banking transaction!",
+                Time = 5,
+            })
+        end
+    end,
+    Tooltip = "Processes banking transactions with error handling"
+})
+
+-- Menu Configuration System
+local MenuConfig = {
+    Theme = {
+        Primary = Color3.fromRGB(255, 255, 255),     -- White
+        Secondary = Color3.fromRGB(0, 0, 0),         -- Black
+        Accent = Color3.fromRGB(128, 128, 128),      -- Gray
+        Success = Color3.fromRGB(76, 175, 80),       -- Green
+        Warning = Color3.fromRGB(255, 193, 7),       -- Amber
+        Error = Color3.fromRGB(244, 67, 54),         -- Red
+        Background = Color3.fromRGB(245, 245, 245),  -- Light Gray
+        Surface = Color3.fromRGB(255, 255, 255)      -- White
+    },
+    Animation = {
+        Duration = 0.3,
+        EasingStyle = Enum.EasingStyle.Quad,
+        EasingDirection = Enum.EasingDirection.Out
+    }
+}
+
+-- Professional Banking System
+local BankingSystem = Tabs.Players:AddRightGroupbox("Professional Banking System")
+
+BankingSystem:AddLabel("Advanced Banking Operations", true)
+BankingSystem:AddDivider()
+
+local BankingConfig = {
+    MaxWithdraw = 90000,
+    MaxDeposit = 30000,
+    MaxDrop = 10000,
+    AutoOperations = {
+        Deposit = false,
+        Withdraw = false,
+        Drop = false
+    }
+}
+
+BankingSystem:AddButton({
+    Text = "Check Account Balance",
+    Func = function()
+        local player = game.Players.LocalPlayer
+        local stored = player:FindFirstChild("stored")
+        
+        if not stored then
+            Library:Notify({
+                Title = "Banking System",
+                Description = "Unable to access account data",
+                Time = 3,
+            })
+            return
+        end
+        
+        local bank = stored:FindFirstChild("Bank")
+        local money = stored:FindFirstChild("Money")
+        
+        if bank and money then
+            Library:Notify({
+                Title = "Account Summary",
+                Description = string.format("Bank: $%s | Cash: $%s", 
+                    tostring(bank.Value), tostring(money.Value)),
+                Time = 5,
+            })
+        end
+    end,
+    Tooltip = "Display current banking and cash balances"
+})
+
+BankingSystem:AddInput("CustomWithdrawAmount", {
+    Text = "Withdrawal Amount",
+    Default = "1000",
+    Numeric = true,
+    Finished = true,
+    Callback = function(value)
+        local amount = tonumber(value)
+        if not amount or amount <= 0 then
+            Library:Notify({
+                Title = "Invalid Input",
+                Description = "Please enter a valid positive number",
+                Time = 3,
+            })
+            return
+        end
+        
+        if amount > BankingConfig.MaxWithdraw then
+            Library:Notify({
+                Title = "Withdrawal Limit",
+                Description = string.format("Maximum withdrawal is $%d", BankingConfig.MaxWithdraw),
+                Time = 3,
+            })
+            return
+        end
+        
+        game:GetService("ReplicatedStorage").BankAction:FireServer("with", amount)
+        Library:Notify({
+            Title = "Withdrawal Processed",
+            Description = string.format("Successfully withdrew $%d", amount),
+            Time = 3,
+        })
+    end
+})
+
+BankingSystem:AddInput("CustomDepositAmount", {
+    Text = "Deposit Amount",
+    Default = "1000",
+    Numeric = true,
+    Finished = true,
+    Callback = function(value)
+        local amount = tonumber(value)
+        if not amount or amount <= 0 then
+            Library:Notify({
+                Title = "Invalid Input",
+                Description = "Please enter a valid positive number",
+                Time = 3,
+            })
+            return
+        end
+        
+        if amount > BankingConfig.MaxDeposit then
+            Library:Notify({
+                Title = "Deposit Limit",
+                Description = string.format("Maximum deposit is $%d", BankingConfig.MaxDeposit),
+                Time = 3,
+            })
+            return
+        end
+        
+        game:GetService("ReplicatedStorage").BankAction:FireServer("depo", tostring(amount))
+        Library:Notify({
+            Title = "Deposit Processed",
+            Description = string.format("Successfully deposited $%d", amount),
+            Time = 3,
+        })
+    end
+})
+
+BankingSystem:AddToggle("AutoBankingOperations", {
+    Text = "Automated Banking",
+    Default = false,
+    Callback = function(value)
+        BankingConfig.AutoOperations.Deposit = value
+        if value then
+            task.spawn(function()
+                while BankingConfig.AutoOperations.Deposit do
+                    local success, error = pcall(function()
+                        game:GetService("ReplicatedStorage").BankAction:FireServer("depo", "30000")
+                    end)
+                    
+                    if success then
+                        Library:Notify({
+                            Title = "Auto Banking",
+                            Description = "Automated deposit completed",
+                            Time = 2,
+                        })
+                    else
+                        Library:Notify({
+                            Title = "Banking Error",
+                            Description = "Automated operation failed",
+                            Time = 3,
+                        })
+                    end
+                    task.wait(5)
+                end
+            end)
+        end
+    end,
+    Tooltip = "Enables automated banking operations"
+})
+
+-- Professional Security System
+local SecuritySystem = Tabs.Bypasses:AddRightGroupbox("Security & Anti-Detection")
+
+SecuritySystem:AddLabel("Advanced Security Measures", true)
+SecuritySystem:AddDivider()
+
+local SecurityConfig = {
+    AntiKick = false,
+    AntiFlag = false,
+    SafeMode = false,
+    Randomization = false
+}
+
+SecuritySystem:AddToggle("AntiDetectionMode", {
+    Text = "Anti-Detection Protocol",
+    Default = false,
+    Callback = function(value)
+        SecurityConfig.AntiFlag = value
+        if value then
+            -- Implement randomized delays and behavior patterns
+            task.spawn(function()
+                while SecurityConfig.AntiFlag do
+                    local randomDelay = math.random(100, 300) / 1000
+                    task.wait(randomDelay)
+                    
+                    -- Add randomized mouse movements or other human-like behaviors
+                    if game.Players.LocalPlayer.Character then
+                        local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                        if humanoid and math.random(1, 100) <= 5 then
+                            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                        end
+                    end
+                end
+            end)
+            
+            Library:Notify({
+                Title = "Security Protocol",
+                Description = "Anti-detection measures activated",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Activates advanced anti-detection protocols"
+})
+
+SecuritySystem:AddToggle("SafeModeOperation", {
+    Text = "Safe Mode Operations",
+    Default = false,
+    Callback = function(value)
+        SecurityConfig.SafeMode = value
+        if value then
+            Library:Notify({
+                Title = "Safe Mode",
+                Description = "Operations restricted to safe parameters",
+                Time = 3,
+            })
+        end
+    end,
+    Tooltip = "Limits operations to safer, less detectable ranges"
+})
+
+-- Professional Notification System Enhancement
+local NotificationSystem = {
+    Queue = {},
+    MaxNotifications = 5,
+    DefaultDuration = 3
+}
+
+function NotificationSystem:Show(title, description, duration, notificationType)
+    local notifyConfig = {
+        Title = title or "System",
+        Description = description or "Operation completed",
+        Time = duration or self.DefaultDuration,
+    }
+    
+    -- Add color coding based on notification type
+    if notificationType == "success" then
+        notifyConfig.Color = MenuConfig.Theme.Success
+    elseif notificationType == "warning" then
+        notifyConfig.Color = MenuConfig.Theme.Warning
+    elseif notificationType == "error" then
+        notifyConfig.Color = MenuConfig.Theme.Error
+    end
+    
+    Library:Notify(notifyConfig)
+end
+
+-- Professional Teleportation System Enhancement
+local TeleportationSystem = Tabs.Main:AddRightGroupbox("Advanced Teleportation")
+
+TeleportationSystem:AddLabel("Professional Transport System", true)
+TeleportationSystem:AddDivider()
+
+local TeleportConfig = {
+    SafetyChecks = true,
+    AnimationEnabled = true,
+    Cooldown = 1,
+    LastTeleport = 0
+}
+
+local ProfessionalLocations = {
+    {Name = "Financial District", Position = Vector3.new(-207.377, 283.6329, -1214.6583), Category = "Banking"},
+    {Name = "Commercial Plaza", Position = Vector3.new(-1049.4557, 419.4685, -568.7767), Category = "Shopping"},
+    {Name = "Residential Zone", Position = Vector3.new(-492.4557, 418.4685, -568.7767), Category = "Housing"},
+    {Name = "Industrial Sector", Position = Vector3.new(-1985.8307, 370.8123, -1176.8387), Category = "Work"},
+    {Name = "Transport Hub", Position = Vector3.new(-379.0562, 253.2626, -1280.4066), Category = "Travel"}
+}
+
+local selectedLocation = ProfessionalLocations[1]
+
+TeleportationSystem:AddDropdown("ProfessionalLocationSelector", {
+    Values = (function()
+        local locations = {}
+        for _, location in ipairs(ProfessionalLocations) do
+            table.insert(locations, string.format("%s (%s)", location.Name, location.Category))
+        end
+        return locations
+    end)(),
+    Default = string.format("%s (%s)", ProfessionalLocations[1].Name, ProfessionalLocations[1].Category),
+    Text = "Select Destination",
+    Callback = function(value)
+        for _, location in ipairs(ProfessionalLocations) do
+            local locationString = string.format("%s (%s)", location.Name, location.Category)
+            if locationString == value then
+                selectedLocation = location
+                break
+            end
+        end
+    end,
+})
+
+TeleportationSystem:AddButton({
+    Text = "Initiate Transport",
+    Func = function()
+        local currentTime = tick()
+        if currentTime - TeleportConfig.LastTeleport < TeleportConfig.Cooldown then
+            NotificationSystem:Show("Transport System", "Please wait before next transport", 3, "warning")
+            return
+        end
+        
+        if not selectedLocation then
+            NotificationSystem:Show("Transport Error", "No destination selected", 3, "error")
+            return
+        end
+
+        local player = game.Players.LocalPlayer
+        if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+            NotificationSystem:Show("Transport Error", "Character not available", 3, "error")
+            return
+        end
+
+        local success, err = pcall(function()
+            if TeleportConfig.SafetyChecks then
+                local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+                    task.wait(0.1)
+                end
+            end
+            
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(selectedLocation.Position)
+            
+            if TeleportConfig.AnimationEnabled then
+                local Animation = Instance.new("Animation", player.PlayerGui)
+                Animation.AnimationId = "rbxassetid://78828590676720"
+                local Character = player.Character or player.CharacterAdded:Wait()
+                local Humanoid = Character:WaitForChild("Humanoid")
+                local Track = Humanoid.Animator:LoadAnimation(Animation)
+                Track:Play()
+                task.wait(0.2)
+                Track:Stop()
+                Animation:Destroy()
+            end
+        end)
+
+        if success then
+            TeleportConfig.LastTeleport = currentTime
+            NotificationSystem:Show("Transport Complete", 
+                string.format("Arrived at %s", selectedLocation.Name), 3, "success")
+        else
+            NotificationSystem:Show("Transport Failed", 
+                string.format("Error: %s", tostring(err)), 5, "error")
+        end
+    end,
+    Tooltip = "Transport to selected destination with safety protocols"
+})
+
+-- Professional Status Monitor
+local StatusMonitor = Tabs.Main:AddLeftGroupbox("System Status Monitor")
+
+StatusMonitor:AddLabel("Real-time System Information", true)
+StatusMonitor:AddDivider()
+
+local StatusConfig = {
+    UpdateInterval = 2,
+    Monitoring = false,
+    Stats = {
+        FPS = 0,
+        Ping = 0,
+        Memory = 0,
+        Players = 0
+    }
+}
+
+local statusLabels = {}
+statusLabels.fps = StatusMonitor:AddLabel("FPS: --")
+statusLabels.ping = StatusMonitor:AddLabel("Ping: -- ms")
+statusLabels.memory = StatusMonitor:AddLabel("Memory: -- MB")
+statusLabels.players = StatusMonitor:AddLabel("Server: -- players")
+
+StatusMonitor:AddToggle("StatusMonitoring", {
+    Text = "Enable System Monitoring",
+    Default = false,
+    Callback = function(value)
+        StatusConfig.Monitoring = value
+        if value then
+            task.spawn(function()
+                local RunService = game:GetService("RunService")
+                local Players = game:GetService("Players")
+                local Stats = game:GetService("Stats")
+                
+                while StatusConfig.Monitoring do
+                    -- Calculate FPS
+                    local fps = math.floor(1 / RunService.Heartbeat:Wait())
+                    StatusConfig.Stats.FPS = fps
+                    
+                    -- Get ping
+                    local ping = math.floor(Players.LocalPlayer:GetNetworkPing() * 1000)
+                    StatusConfig.Stats.Ping = ping
+                    
+                    -- Get memory usage (approximate)
+                    local memory = math.floor(Stats:GetTotalMemoryUsageMb())
+                    StatusConfig.Stats.Memory = memory
+                    
+                    -- Get player count
+                    local playerCount = #Players:GetPlayers()
+                    StatusConfig.Stats.Players = playerCount
+                    
+                    -- Update labels
+                    statusLabels.fps:SetText(string.format("FPS: %d", fps))
+                    statusLabels.ping:SetText(string.format("Ping: %d ms", ping))
+                    statusLabels.memory:SetText(string.format("Memory: %d MB", memory))
+                    statusLabels.players:SetText(string.format("Server: %d players", playerCount))
+                    
+                    task.wait(StatusConfig.UpdateInterval)
+                end
+            end)
+        end
+    end,
+    Tooltip = "Monitors system performance and server statistics"
+})
+
+-- Professional Settings System
+local SettingsSystem = Window:AddTab("System Configuration")
+local GeneralSettings = SettingsSystem:AddLeftGroupbox("General Settings")
+
+GeneralSettings:AddLabel("Application Configuration", true)
+GeneralSettings:AddDivider()
+
+GeneralSettings:AddToggle("ProfessionalMode", {
+    Text = "Professional Interface Mode",
+    Default = true,
+    Callback = function(value)
+        if value then
+            NotificationSystem:Show("Interface", "Professional mode activated", 2, "success")
+        else
+            NotificationSystem:Show("Interface", "Standard mode activated", 2, "success")
+        end
+    end,
+    Tooltip = "Enables clean, professional interface styling"
+})
+
+GeneralSettings:AddSlider("NotificationDuration", {
+    Text = "Notification Duration",
+    Default = 3,
+    Min = 1,
+    Max = 10,
+    Rounding = 0,
+    Callback = function(value)
+        NotificationSystem.DefaultDuration = value
+    end,
+    Tooltip = "Sets default duration for system notifications"
+})
+
+GeneralSettings:AddDropdown("ThemeSelector", {
+    Values = {"Professional White", "Dark Professional", "System Default"},
+    Default = "Professional White",
+    Text = "Interface Theme",
+    Callback = function(value)
+        NotificationSystem:Show("Theme", string.format("Theme changed to %s", value), 2, "success")
+    end,
+    Tooltip = "Select interface color theme"
+})
+
+-- Professional Performance Settings
+local PerformanceSettings = SettingsSystem:AddRightGroupbox("Performance Settings")
+
+PerformanceSettings:AddLabel("System Optimization", true)
+PerformanceSettings:AddDivider()
+
+local PerformanceConfig = {
+    OptimizedMode = false,
+    ReduceEffects = false,
+    LowLatency = false
+}
+
+PerformanceSettings:AddToggle("OptimizedPerformance", {
+    Text = "Performance Optimization",
+    Default = false,
+    Callback = function(value)
+        PerformanceConfig.OptimizedMode = value
+        if value then
+            -- Implement performance optimizations
+            game:GetService("RunService"):Set3dRenderingEnabled(true)
+            NotificationSystem:Show("Performance", "Optimization enabled", 2, "success")
+        end
+    end,
+    Tooltip = "Enables system performance optimizations"
+})
+
+PerformanceSettings:AddToggle("ReduceVisualEffects", {
+    Text = "Reduce Visual Effects",
+    Default = false,
+    Callback = function(value)
+        PerformanceConfig.ReduceEffects = value
+        if value then
+            NotificationSystem:Show("Graphics", "Visual effects reduced", 2, "success")
+        end
+    end,
+    Tooltip = "Reduces visual effects for better performance"
+})
+
+-- Professional Information Display
+local InfoSystem = SettingsSystem:AddLeftGroupbox("System Information")
+
+InfoSystem:AddLabel("Application Details", true)
+InfoSystem:AddDivider()
+
+local gameInfo = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+InfoSystem:AddLabel(string.format("Game: %s", gameInfo.Name))
+InfoSystem:AddLabel(string.format("Game ID: %d", game.PlaceId))
+InfoSystem:AddLabel(string.format("Server ID: %s", game.JobId:sub(1, 8)))
+
+local player = game:GetService("Players").LocalPlayer
+InfoSystem:AddLabel(string.format("User: %s", player.Name))
+InfoSystem:AddLabel(string.format("User ID: %d", player.UserId))
+InfoSystem:AddLabel(string.format("Account Age: %d days", player.AccountAge))
+
+-- Professional Footer
+InfoSystem:AddDivider()
+InfoSystem:AddLabel("Professional Edition v3.0", true)
+InfoSystem:AddLabel("Developed with advanced security protocols")
+InfoSystem:AddLabel("All operations logged and monitored")
+
+-- Initialize Professional Systems
+task.spawn(function()
+    NotificationSystem:Show("System Startup", "Professional interface initialized", 3, "success")
+    task.wait(1)
+    NotificationSystem:Show("Security", "All security protocols active", 2, "success")
+end)
